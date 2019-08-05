@@ -1,5 +1,5 @@
 [package]
-name = "zfsagant"
+name = "zca"
 version = "0.1.0"
 authors = ["Jeffry Molanus <jeffry.molanus@gmail.com>"]
 edition = "2018"
@@ -20,3 +20,6 @@ tower-util = "0.1.0"
 [dependencies.grpc-router]
 git = "https://github.com/jkryl/grpc-router"
 
+# dependencies used by build.rs
+[build-dependencies]
+tower-grpc-build = { version = "0.1.0", features = ["tower-hyper"] }
