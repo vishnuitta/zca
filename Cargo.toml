@@ -1,0 +1,22 @@
+[package]
+name = "zfsagant"
+version = "0.1.0"
+authors = ["Jeffry Molanus <jeffry.molanus@gmail.com>"]
+edition = "2018"
+
+# for of the libzfs bindings that removes the strict pkg requirements for now
+[dependencies.libzfs]
+branch = "0712"
+git = "https://github.com/gila/rust-libzfs"
+
+[dependencies]
+# for gRPC we use the the tower eco-system
+tower-hyper = "0.1.0"
+tower-request-modifier = "0.1.0"
+tower-grpc = { version = "0.1.0", features = ["tower-hyper"] }
+tower-util = "0.1.0"
+
+# pkg created by Jan to route gRPC request
+[dependencies.grpc-router]
+git = "https://github.com/jkryl/grpc-router"
+
