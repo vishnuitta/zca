@@ -6,6 +6,6 @@ fn zpool_list_test() {
     let mut zfs = Libzfs::new();
     let pool = zfs.pool_by_name("test");
     let pool = pool.unwrap();
-    let state = pool.state();
+    let _state = pool.state();
     dbg!(pool);
 }

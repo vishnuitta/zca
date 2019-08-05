@@ -4,6 +4,10 @@ version = "0.1.0"
 authors = ["Jeffry Molanus <jeffry.molanus@gmail.com>"]
 edition = "2018"
 
+[[bin]]
+name = "zca"
+path = "src/main.rs"
+
 # for of the libzfs bindings that removes the strict pkg requirements for now
 [dependencies.libzfs]
 branch = "0712"
@@ -15,6 +19,19 @@ tower-hyper = "0.1.0"
 tower-request-modifier = "0.1.0"
 tower-grpc = { version = "0.1.0", features = ["tower-hyper"] }
 tower-util = "0.1.0"
+tokio = "0.1.22"
+tokio-threadpool = "0.1.15"
+hyper = "0.12"
+# to parse CLI arguments
+structopt = "0.2.18"
+env_logger = "0.6"
+log = "0.4"
+# used for grpc to rust conversions
+prost = "0.5"
+prost-derive = "0.5"
+prost-types = "0.5"
+bytes = "0.4"
+futures = "0.1.25"
 
 # pkg created by Jan to route gRPC request
 [dependencies.grpc-router]
