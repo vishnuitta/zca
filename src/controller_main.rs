@@ -4,15 +4,17 @@ extern crate log;
 use env_logger::Builder;
 use futures::{Future, Stream};
 use grpc_router::Router2;
-use log::{LevelFilter, Record};
+use log::LevelFilter;
+use std::fs;
 use std::io::Write;
-use std::{env, fs};
 use structopt::StructOpt;
 use tokio::net::{TcpListener, UnixListener};
 use tower_hyper::server::{Http, Server};
-use zca::csi::server::{IdentityServer, NodeServer};
+use zca::controller::Controller;
+use zca::csi::server::{ControllerServer, IdentityServer};
 use zca::identity::Identity;
-use zca::node::CsiNode;
+
+
 #[derive(StructOpt, Debug)]
 struct CliArgs {
     #[structopt(short, long)]
@@ -31,7 +33,7 @@ fn main() {
     let csi_svc = Router2::new(
         "/csi.v1.Identity/",
         IdentityServer::new(Identity::new()),
-        NodeServer::new(CsiNode::new()),
+        ControllerServer::new(Controller::new()),
     );
 
     let mut csi_server = Server::new(csi_svc);
@@ -60,7 +62,7 @@ fn main() {
             }))
         };
 
-    info!("CSI listening on {}", opt.socket);
+    info!("CSI controller istening on {}", opt.socket);
 
     tokio::run(accept_csi.then(|res| {
         if let Err(err) = res {

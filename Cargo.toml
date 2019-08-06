@@ -5,8 +5,12 @@ authors = ["Jeffry Molanus <jeffry.molanus@gmail.com>"]
 edition = "2018"
 
 [[bin]]
-name = "zca"
-path = "src/main.rs"
+name = "zca-agent"
+path = "src/agent_main.rs"
+
+[[bin]]
+name = "zca-controller"
+path = "src/controller_main.rs"
 
 # for of the libzfs bindings that removes the strict pkg requirements for now
 [dependencies.libzfs]
