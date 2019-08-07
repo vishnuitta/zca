@@ -4,7 +4,7 @@ use crate::csi::{
     NodeGetVolumeStatsRequest, NodeGetVolumeStatsResponse, NodePublishVolumeRequest,
     NodePublishVolumeResponse, NodeStageVolumeRequest, NodeStageVolumeResponse,
     NodeUnpublishVolumeRequest, NodeUnpublishVolumeResponse, NodeUnstageVolumeRequest,
-    NodeUnstageVolumeResponse,
+    NodeUnstageVolumeResponse, VolumeUsage,
 };
 use futures::future::FutureResult;
 use futures::Future;
@@ -87,7 +87,60 @@ impl server::Node for CsiNode {
         &mut self,
         _request: Request<NodeGetVolumeStatsRequest>,
     ) -> Self::NodeGetVolumeStatsFuture {
-        unimplemented!()
+        let libzfs_handle = LibZfs::new().unwrap();
+
+/*
+            if let Ok(cap)  = libzfs_handle.get_capacity("pool1") {
+            
+                let parsed = cap.parse::<i64>().uwrap();
+                Box::new(Response::new(NodeGetVolumeStatsResponse{
+                    vec![VolumeUsage {
+                    }]
+                }
+            } else {
+
+            }
+*/
+
+        let f;
+        let result = libzfs_handle.get_capacity("pool1");
+        if let Ok(result) = result {
+            let volusage = VolumeUsage {
+                available: 0,
+                total: 0,
+                used: result as i64,
+                unit: 0,
+            };
+            let mut v = Vec::new();
+            v.push(volusage);
+            let reply = NodeGetVolumeStatsResponse {
+                usage: v,
+            };
+            f = ok(Response::new(reply));
+        } else {
+            f = err(Status::new(Code::Internal, result.unwrap().to_string()));
+        }
+/*
+        let mut result = libzfs_handle.get_capacity("pool1"); 
+        let mut f;
+        if result.is_err() {
+            f = err(Status::new(Code::Internal, result.err().unwrap().to_string()));
+        } else {
+            let mut reply = VolumeUsage {
+                available: 0,
+                total: 0,
+                used: result.ok().unwrap().parse::<i64>().ok().unwrap(),
+                unit: 0,
+            };
+            let mut v = Vec::new();
+            v.push(reply);
+            let mut s = NodeGetVolumeStatsResponse {
+                usage: v,
+            };
+            f = ok(Response::new(s));
+        }
+*/
+        Box::new(f)
     }
 
     fn node_expand_volume(
