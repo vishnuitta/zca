@@ -8,7 +8,9 @@ use crate::csi::{
 };
 use futures::future::FutureResult;
 use futures::Future;
-use tower_grpc::{Request, Response, Status};
+use futures::future::{ok, err};
+use tower_grpc::{Request, Response, Status, Code};
+use libzfs_rs::zfs::{{LibZfs}};
 
 /// our main structure
 #[derive(Clone, Debug, Default)]
@@ -55,9 +57,23 @@ impl server::Node for CsiNode {
 
     fn node_publish_volume(
         &mut self,
-        _request: Request<NodePublishVolumeRequest>,
+        request: Request<NodePublishVolumeRequest>,
     ) -> Self::NodePublishVolumeFuture {
-        unimplemented!()
+        let libzfs_handle = LibZfs::new().unwrap();
+
+        let mut pool = "pool1/".to_string();
+        pool.push_str(&request.get_ref().volume_id);
+
+        println!("{}", pool);
+//        dbg!(&pool);
+
+        let result = libzfs_handle.create_filesystem(pool.as_str());
+        let reply = NodePublishVolumeResponse{};
+        let mut f = ok(Response::new(reply));
+        if result.is_err() {
+            f = err(Status::new(Code::Internal, result.err().unwrap().to_string()));
+        }
+        Box::new(f)
     }
 
     fn node_unpublish_volume(
